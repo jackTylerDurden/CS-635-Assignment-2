@@ -3,10 +3,13 @@ public class Context {
     LinkedHashMap<String,Cell> values = new LinkedHashMap<String,Cell>();    
     LinkedHashMap<String,String> colIndexToExpressionMap = new LinkedHashMap<String,String>();
     Set<String> dependentCellsSet = new HashSet<String>();
-    Caretaker caretaker = new Caretaker();
-    Originator originator = new Originator();
-    int saveCount = 0;
-    int currentCellState = -1;
+    Caretaker caretakerForEquationView = new Caretaker();
+    Originator originatorForEquationView = new Originator();
+    Caretaker caretakerForValueView = new Caretaker();
+    Originator originatorForValueView = new Originator();    
+    int currentCellStateForEquationView = -1;
+    int currentCellStateForValueView = -1;
+
     public String getValue(String key){
         if(values.get(key) == null){
             Cell cell = new Cell("");            
@@ -39,20 +42,36 @@ public class Context {
                 proceedWithSave = true;
             }            
         }
-        if(true){
-            Client.con.originator.set(contextStateMap);
-            Client.con.caretaker.addMemento(Client.con.originator.storeInMemento());
-            Client.con.saveCount++;
-            Client.con.currentCellState++;
-            System.out.println("Client.con.currentCellState--------->>>>"+Client.con.currentCellState);            
+        if(Client.isValueView){
+            Client.con.originatorForValueView.set(contextStateMap);
+            Client.con.caretakerForValueView.addMemento(Client.con.originatorForValueView.storeInMemento());            
+            Client.con.currentCellStateForValueView++;
+            System.out.println("Client.con.currentCellState--------->>>>"+Client.con.currentCellStateForValueView);            
+            System.out.println("");
+        }else if(!Client.isValueView){
+            Client.con.originatorForEquationView.set(contextStateMap);
+            Client.con.caretakerForEquationView.addMemento(Client.con.originatorForEquationView.storeInMemento());            
+            Client.con.currentCellStateForEquationView++;
+            System.out.println("Client.con.currentCellState--------->>>>"+Client.con.currentCellStateForEquationView);            
             System.out.println("");
         }        
+
     }
 
-    public void restoreState(){                
-        if(Client.con.currentCellState >= 1){                                    
-            Client.con.currentCellState--;
-            LinkedHashMap<String,String> contextAfterUndo = Client.con.originator.restoreFromMemento(Client.con.caretaker.fetchMemento(Client.con.currentCellState));
+    public void restoreState(){                        
+            LinkedHashMap<String,String> contextAfterUndo = new LinkedHashMap<>();
+            if(Client.isValueView){
+                if(Client.con.currentCellStateForValueView >= 1){
+                    Client.con.currentCellStateForValueView--;
+                    contextAfterUndo = Client.con.originatorForValueView.restoreFromMemento(Client.con.caretakerForValueView.fetchMemento(Client.con.currentCellStateForValueView));    
+                }
+            }else{
+                if(Client.con.currentCellStateForEquationView >= 1){
+                    Client.con.currentCellStateForEquationView--;
+                    contextAfterUndo = Client.con.originatorForEquationView.restoreFromMemento(Client.con.caretakerForEquationView.fetchMemento(Client.con.currentCellStateForEquationView));
+                }
+            }
+            
             for(String cellKey : contextAfterUndo.keySet()){                
                 String pastCellVal = contextAfterUndo.get(cellKey);
                 Cell presentCell = Client.con.values.get(cellKey);
@@ -64,7 +83,7 @@ public class Context {
                     Client.dataModel.setValueAt(pastCellVal, 0, Integer.valueOf(cellKey));
                 }
             }
-        }
+        
     }
     
     public static void switchToValueView(){        
@@ -84,6 +103,7 @@ public class Context {
                 }                
             }
         }
+        Client.con.saveState();
     }
     
     public static void switchToEquationView(){
