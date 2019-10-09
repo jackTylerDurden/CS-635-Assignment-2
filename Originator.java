@@ -1,18 +1,21 @@
+import java.util.*;
 public class Originator{
-    private Cell cell = new Cell("");
+    private LinkedHashMap<String,String> context = new LinkedHashMap<>();
 
-    public void set(Cell newCell){
-        System.out.println("newCell-------------???"+newCell.value);
-        cell.value = newCell.value;
-        cell.colIndex = newCell.colIndex;
+    public void set(LinkedHashMap<String,String> newContext){
+        for(String key : newContext.keySet()){
+            // System.out.println("key-------------->>>>"+key);
+            // System.out.println("newContext-------------->>>>"+newContext.get(key));
+        }
+        context = newContext;    
     }
 
     public Memento storeInMemento(){
-        return new Memento(cell);
+        return new Memento(context);
     }
 
-    public Cell restoreFromMemento(Memento memento){
-        Cell savedCell = memento.getSavedCell();
-        return savedCell;
+    public LinkedHashMap<String,String> restoreFromMemento(Memento memento){
+        LinkedHashMap<String,String> savedContext = memento.getSavedContext();
+        return savedContext;
     }
 }

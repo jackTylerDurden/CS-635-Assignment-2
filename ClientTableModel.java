@@ -14,7 +14,7 @@ public class ClientTableModel extends AbstractTableModel {
     }
 
     @Override    
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {        
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {          
         Client.con.setValue(String.valueOf(columnIndex), String.valueOf(aValue)); 
         fireTableCellUpdated(rowIndex, columnIndex);       
     }

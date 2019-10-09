@@ -12,8 +12,9 @@ public class Client {
     public static Context con = new Context();
     public static Boolean isValueView = false;
     public static Boolean isToggled = false;
+    public static Boolean undoStarted = false;
 
-    public static void setupGrid() {
+    public static void setupGrid() {        
         frame = new JFrame();
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Frame Title
@@ -50,18 +51,11 @@ public class Client {
         undoButton.setBounds(150, 95, 90, 50);
         undoButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {                
-                if(con.currentCellState >= 1){
-                    System.out.println("on.currentCellState before--------------->>>"+con.currentCellState);
-                    con.currentCellState--;                    
-                    System.out.println("on.currentCellState after--------------->>>"+con.currentCellState);                    
-                    Cell cellAfterUndo = con.originator.restoreFromMemento(con.caretaker.fetchMemento(con.currentCellState));
-                    System.out.println("cellAfterUndo--------------->>>"+cellAfterUndo.value);
-                    con.setValue(String.valueOf(cellAfterUndo.colIndex), cellAfterUndo.value);
-                    cellAfterUndo.evaluate();
-                }
-            }
-            
+            public void actionPerformed(ActionEvent e) {
+                undoStarted = true;
+                Client.con.restoreState();                
+                undoStarted = false;
+            }            
         });
         frame.add(undoButton);
         frame.add(sp);

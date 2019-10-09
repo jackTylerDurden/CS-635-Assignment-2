@@ -1,15 +1,13 @@
 import java.util.*;
 public class Caretaker{
-    ArrayList<Memento> savedCells = new ArrayList<Memento>();
+    ArrayList<Memento> savedContexts = new ArrayList<Memento>();
 
     public void addMemento(Memento m){
-        savedCells.add(m);
+        savedContexts.add(m);        
     }
 
     public Memento fetchMemento(int colIndex){
-        for(Memento meme : savedCells){
-            System.out.println("meme.cell.value---------->>>"+meme.getSavedCell().value);
-        }
-        return savedCells.get(colIndex);
+        System.out.println("colIndex------__>>>"+colIndex);
+        return savedContexts.get(colIndex);
     }
 }

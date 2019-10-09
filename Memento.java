@@ -1,12 +1,12 @@
+import java.util.*;
 public class Memento{
-    private Cell cell = new Cell("");
+    private LinkedHashMap<String,String> context = new LinkedHashMap<String,String>();
 
-    public Memento(Cell savedCell){
-        cell.value = savedCell.value;
-        cell.colIndex = savedCell.colIndex;
+    public Memento(LinkedHashMap<String,String> savedContext){
+        context = savedContext;
     }
 
-    public Cell getSavedCell(){
-        return cell;
+    public LinkedHashMap<String,String> getSavedContext(){
+        return context;
     }
 }

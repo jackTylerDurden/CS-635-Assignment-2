@@ -2,12 +2,13 @@ import java.util.*;
 public class Cell{
     String value="";
     int colIndex;
-    int isVisited=0;
+    Boolean isObserver;
     HashSet<Cell> observerList;
 
     public Cell(String val){
         value = val;
         observerList = new HashSet<Cell>();
+        isObserver = false;
     }
 
     public void notifyObserver(){        
@@ -27,7 +28,7 @@ public class Cell{
     public void update(){
         value = Client.con.colIndexToExpressionMap.get(String.valueOf(colIndex));        
         Client.con.dependentCellsSet = new HashSet<String>();
-        value = getReferredCell();
+        value = getReferredCell();        
         evaluate();
     }
 
@@ -42,20 +43,11 @@ public class Cell{
             if(!Client.isToggled){
                 notifyObserver();
             }            
-        }else{
+        }else{            
             Client.con.dependentCellsSet = new HashSet<String>();
             this.observerList = new HashSet<Cell>();
-        }
-        saveCellState(this);
-    }
-
-    public void saveCellState(Cell cellToSave){
-        Client.con.originator.set(cellToSave);
-        Client.con.caretaker.addMemento(Client.con.originator.storeInMemento());
-        Client.con.saveCount++;
-        Client.con.currentCellState++;
-    }
-
+        }        
+    }    
     
     public void evaluate(){
         value =  PostfixEvaluator.evaluateExpression(value);        
@@ -64,9 +56,8 @@ public class Cell{
     public String getReferredCell(){         
         List<String> resultList = new ArrayList<String>();                
         if(value != null && !value.isBlank()){            
-            System.out.println("value-----------_>>>"+value);
-            if(value.matches(Expression.numberRegex)){
-                isVisited = 0;                
+            // System.out.println("value-----------_>>>"+value);
+            if(value.matches(Expression.numberRegex)){                
                 Client.con.dependentCellsSet.remove(String.valueOf(this.colIndex));                
                 resultList.add(value);                
                 return String.join(" ", resultList);
@@ -84,7 +75,8 @@ public class Cell{
                     col = col - Expression.firstAlphabetAscii;                    
                     Cell referredCell = Client.con.values.get(String.valueOf(col));
                     // System.out.println("term  "+term+" ");
-                    referredCell.register(this);                                        
+                    this.isObserver = true;
+                    referredCell.register(this);
                     term = referredCell.getReferredCell();
                     if(term == "error")
                         return "error";

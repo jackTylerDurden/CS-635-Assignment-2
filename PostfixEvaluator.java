@@ -2,7 +2,9 @@ import java.util.*;
 public class PostfixEvaluator{
     public static String evaluateExpression(String postfixExpression){            
         String result = "";
-        if(postfixExpression == null || postfixExpression.equals("error")){
+        if(postfixExpression.isEmpty()){
+            return "";
+        }else if(postfixExpression.equals("error")){
             return "error";
         }
         try{
@@ -56,7 +58,7 @@ public class PostfixEvaluator{
             // System.out.println("result----------->>>"+result);
         }catch(Exception e){
             e.printStackTrace();    
-            return "error from 3";
+            return "error";
         }                
         return result;
     }
